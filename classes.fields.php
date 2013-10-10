@@ -362,7 +362,7 @@ abstract class CMB_Field {
 
 			</div>
 
-			<button class="button repeat-field"><?php _e( 'Add New', 'cmb' ); ?></button>
+			<button class="button repeat-field"><?php esc_html_e( 'Add New', 'cmb' ); ?></button>
 
 		<?php }
 
@@ -463,7 +463,7 @@ class CMB_Image_Field extends CMB_Field {
 			'url'					=> admin_url('admin-ajax.php'),
 			'flash_swf_url'			=> includes_url( 'js/plupload/plupload.flash.swf' ),
 			'silverlight_xap_url'	=> includes_url( 'js/plupload/plupload.silverlight.xap' ),
-			'filters'				=> array( array( 'title' => __( 'Allowed Image Files' ), 'extensions' => '*' ) ),
+			'filters'				=> array( array( 'title' => esc_attr__( 'Allowed Image Files' ), 'extensions' => '*' ) ),
 			'multipart'				=> true,
 			'urlstream_upload'		=> true,
 			// additional post data to send to our ajax hook
@@ -491,7 +491,7 @@ class CMB_Image_Field extends CMB_Field {
 
 		$attachment_id = $this->get_value();
 		// Filter to change the drag & drop box background string
-		$drop_text = __( 'Drag & Drop files', 'cmb' );
+		$drop_text = esc_attr__( 'Drag & Drop files', 'cmb' );
 		$extensions = implode( ',', $args['allowed_extensions'] );
 		$img_prefix	= $this->id;
 		$style = sprintf( 'width: %dpx; height: %dpx;', $args['size']['width'], $args['size']['height'] );
@@ -514,14 +514,14 @@ class CMB_Image_Field extends CMB_Field {
 				<?php endif; ?>
 
 				<div class="image-options">
-					<a href="#" class="delete-image button-secondary"><?php _e( 'Remove', 'cmb' ) ?></a>
+					<a href="#" class="delete-image button-secondary"><?php esc_html_e( 'Remove', 'cmb' ) ?></a>
 				</div>
 			</div>
 
 			<div style="<?php echo esc_attr( $style ); ?>" id="<?php echo esc_attr( $img_prefix ); ?>-dragdrop" data-extensions="<?php echo esc_attr( $extensions ); ?>" data-size="<?php echo esc_attr( $size_str ); ?>" class="rwmb-drag-drop upload-form">
 				<div class="rwmb-drag-drop-inside">
 					<p><?php echo esc_html( $drop_text ); ?></p>
-					<p><?php _e( 'or', 'cmb' ); ?></p>
+					<p><?php esc_html_e( 'or', 'cmb' ); ?></p>
 					<p><input id="<?php echo esc_attr( $img_prefix ); ?>-browse-button" type="button" value="<?php esc_attr_e( 'Select Files', 'cmb' ) ?>" class="button-secondary" /></p>
 				</div>
 			</div>
@@ -1048,7 +1048,7 @@ class CMB_Select extends CMB_Field {
 		>
 
 			<?php if ( ! empty( $this->args['allow_none'] ) ) : ?>
-				<option value=""><?php _ex( 'None', 'select field', 'cmb' ) ?></option>
+				<option value=""><?php echo esc_html_x( 'None', 'select field', 'cmb' ) ?></option>
 			<?php endif; ?>
 
 			<?php foreach ( $this->args['options'] as $value => $name ): ?>
@@ -1075,7 +1075,8 @@ class CMB_Select extends CMB_Field {
 				if ( 'undefined' === typeof( window.cmb_select_fields ) )
 					window.cmb_select_fields = {};
 				
-				window.cmb_select_fields.<?php echo esc_js( $this->get_js_id() ); ?> = options;
+				var id = <?php echo json_encode( $this->get_js_id() ); ?>;
+				window.cmb_select_fields[id] = options;
 
 			})( jQuery );
 
@@ -1224,7 +1225,8 @@ class CMB_Post_Select extends CMB_Select {
 					return false; 
 				
 				// Get options for this field so we can modify it.
-				var options = window.cmb_select_fields.<?php echo esc_js( $this->get_js_id() ); ?>;
+				var id = <?php echo json_encode( $this->get_js_id() ); ?>;
+				var options = window.cmb_select_fields[id];
 
 				<?php if ( $this->args['ajax_url'] && $this->args['multiple'] ) : ?>
 					// The multiple setting is required when using ajax (because an input field is used instead of select)
@@ -1260,12 +1262,12 @@ class CMB_Post_Select extends CMB_Select {
 					var ajaxData = {
 						action  : 'cmb_post_select',
 						post_id : '<?php echo intval( get_the_id() ); ?>', // Used for user capabilty check.
-						nonce   : '<?php echo esc_js( wp_create_nonce( 'cmb_select_field' ) ); ?>',
+						nonce   : <?php echo json_encode( wp_create_nonce( 'cmb_select_field' ) ); ?>,
 						query   : <?php echo json_encode( $this->args['ajax_args'] ); ?>
 					};
 					
 					options.ajax = {
-						url: '<?php echo esc_js( esc_url( $this->args['ajax_url'] ) ); ?>',
+						url: <?php echo json_encode( esc_url( $this->args['ajax_url'] ) ); ?>,
 						type: 'POST',
 						dataType: 'json',
 						data: function( term, page ) {
@@ -1420,7 +1422,7 @@ class CMB_Group_Field extends CMB_Field {
 
 				</div>
 
-				<button class="button repeat-field"><?php _e( 'Add New', 'cmb' ); ?></button>
+				<button class="button repeat-field"><?php esc_html_e( 'Add New', 'cmb' ); ?></button>
 
 		<?php }
 
